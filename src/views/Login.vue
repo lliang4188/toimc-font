@@ -160,7 +160,6 @@ export default {
       if (!isValid) {
         return
       }
-      console.log('submit event')
       login({
         username: this.username,
         password: this.password,
@@ -174,7 +173,6 @@ export default {
           requestAnimationFrame(() => {
             this.$refs.observer.reset()
           })
-          console.log(res)
         } else if (res.code === 401) {
           this.$refs.codefield.setErrors([res.msg])
         }
@@ -185,7 +183,6 @@ export default {
         } else {
           this.$alert('服务器错误')
         }
-        console.log(err.response)
       })
     }
   }

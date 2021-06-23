@@ -112,7 +112,6 @@ export default {
   methods: {
     _getCode () {
       getCode().then((res) => {
-        console.log(res)
         if (res.code === 200) {
           this.svg = res.data
         }
@@ -123,7 +122,6 @@ export default {
         username: this.username,
         code: this.code
       }).then((res) => {
-        console.log(res)
         if (res.code === 200) {
           alert('邮件发送成功')
         }
