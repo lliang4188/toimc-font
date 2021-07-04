@@ -18,7 +18,45 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/layui/css/layui.css";
 @import "./assets/css/global.css";
-@import "./assets/layui/css/modules/layer/default/layer.css"
+.svg {
+  float: left;
+  position: relative;
+  top: -4px;
+}
+.gray{
+  color: #999;
+}
+.text-center{
+  text-align: center;
+}
+.text-left{
+  text-align: left;
+}
+.text-right{
+  text-align: right;
+}
+@for $i from 0 to 5 {
+  .pd#{$i * 10} {
+    padding: $i * 10 + px !important;
+  }
+  .pl#{$i * 10} {
+    padding-left: $i * 10 + px !important;
+  }
+  .pr#{$i * 10} {
+    padding-right: $i * 10 + px !important;
+  }
+  .mr#{$i * 10} {
+    margin-right: $i * 10px !important;
+  }
+  .ml#{$i * 10} {
+     margin-left: $i * 10px !important;
+  }
+}
+.orange{
+  color: #ff5722;
+}
+.pull-right{
+  float: right;
+}
 </style>

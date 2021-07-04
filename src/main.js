@@ -3,10 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Alert from './components/moudles/alert'
+import Pop from './components/moudles/pop'
 import '@/utils/veevalidate'
 
 Vue.use(Alert)
-
+Vue.use(Pop)
 Vue.config.productionTip = false
 
 new Vue({

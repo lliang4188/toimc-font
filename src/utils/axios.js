@@ -2,10 +2,14 @@
 // 对错误对统一处理
 import axios from 'axios'
 import errorHandle from './errorHandle'
+import store from '@/store'
+import PublicConfig from '@/config'
+const CancelToken = axios.CancelToken
 
 class HttpRequest {
   constructor (baseURL) {
     this.baseURL = baseURL
+    this.pending = {}
   }
   // 获取 axios 配置
   getInsideConfig () {
@@ -18,20 +22,38 @@ class HttpRequest {
     }
     return config
   }
+  removePending (key, isRequest = false) {
+    if (this.pending[key] && isRequest) {
+      this.pending[key]('取消重复的请求')
+    }
+    delete this.pending[key]
+  }
   // 设定拦截器
   interceptors (instance) {
     // 请求拦截器
-    instance.interceptors.request.use(
-      config => {
-        // Do something before request is sent
-        // console.log('config' + config)
-        return config
-      },
-      err => {
-        errorHandle(err)
-        // Do something with request error
-        return Promise.reject(err)
+    instance.interceptors.request.use((config) => {
+      let isPublic = false
+      PublicConfig.publicPath.map((path) => {
+        isPublic = isPublic || path.test(config.url)
+      })
+      const token = store.state.token
+      if (!isPublic && token) {
+        config.headers.Authorization = 'Bearer ' + token
       }
+      // Do something before request is sent
+      let key = config.url + '&' + config.method
+      this.removePending(key, true)
+      config.cancelToken = new CancelToken((c) => {
+        this.pending[key] = c
+      })
+      // console.log('config' + config)
+      return config
+    },
+    err => {
+      errorHandle(err)
+      // Do something with request error
+      return Promise.reject(err)
+    }
     )
 
     // 响应请求拦截器
@@ -40,6 +62,8 @@ class HttpRequest {
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
         // console.log('res is: ' + res)
+        let key = res.config.url + '&' + res.config.method
+        this.removePending(key)
         if (res.status === 200) {
           return Promise.resolve(res.data)
         } else {
@@ -63,10 +87,13 @@ class HttpRequest {
     return instance(newOptions)
   }
   get (url, config) {
-    const options = Object.assign({
-      method: 'get',
-      url: url
-    }, config)
+    const options = Object.assign(
+      {
+        method: 'get',
+        url: url
+      },
+      config
+    )
     return this.request(options)
   }
   post (url, data) {

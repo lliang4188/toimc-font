@@ -3,10 +3,10 @@
     <div class="fly-panel fly-panel-user" pad20>
       <div class="layui-tab layui-tab-brief" lay-filter="user">
         <ul class="layui-tab-title">
-          <li><router-link :to="{name: 'login'}">登入</router-link></li>
+          <li><router-link :to="{ name: 'login' }">登入</router-link></li>
           <li class="layui-this">找回密码<!--重置密码--></li>
         </ul>
-        <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+        <div class="layui-form layui-tab-content" style="padding: 20px 0">
           <div class="layui-tab-item layui-show">
             <!-- 重置密码 -->
             <!--
@@ -47,43 +47,65 @@
             <div class="fly-error">非法链接，请重新校验您的信息</div>
             -->
 
-            <div class="layui-form layui-form-pane">
-              <form method="post">
-                <div class="layui-form-item">
-                  <label class="layui-form-label">邮箱</label>
-                      <validation-provider
-                    name="email"
-                    rules="required|email"
-                    v-slot="{ errors }"
-                  >
-                    <div class="layui-input-inline">
-                    <input type="text" autocomplete="off" v-model.trim="username" class="layui-input" placeholder="请输入邮箱地址">
-                    </div>
-                    <div class="layui-form-mid">
-                      <span style="color:#c00">{{ errors[0] }}</span>
-                    </div>
-                  </validation-provider>
-
-                </div>
-                <div class="layui-form-item">
-                  <label class="layui-form-label">验证码</label>
-                  <validation-provider name="code" rules="required|length:4" v-slot="{ errors }">
-                    <div class="layui-input-inline">
-                      <input type="text" name="code" placeholder="请输入图片验证码" autocomplete="off" v-model.trim="code" class="layui-input">
-                    </div>
-                    <div class="svg" v-html="svg" @click="_getCode()">
-                    </div>
-                    <div class="layui-row">
-                      <span style="color:#c00">{{ errors[0] }}</span>
-                    </div>
-                  </validation-provider>
-                </div>
-                <div class="layui-form-item">
-                  <button type="button" class="layui-btn" @click="submit()">提交</button>
-                </div>
-              </form>
-            </div>
-
+            <validation-observer ref="observer" v-slot="{ validate }">
+              <div class="layui-form layui-form-pane">
+                <form method="post">
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+                    <validation-provider
+                      name="email"
+                      rules="required|email"
+                      v-slot="{ errors }"
+                    >
+                      <div class="layui-input-inline">
+                        <input
+                          type="text"
+                          autocomplete="off"
+                          v-model.trim="username"
+                          class="layui-input"
+                          placeholder="请输入邮箱地址"
+                        />
+                      </div>
+                      <div class="layui-form-mid">
+                        <span style="color: #c00">{{ errors[0] }}</span>
+                      </div>
+                    </validation-provider>
+                  </div>
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">验证码</label>
+                    <validation-provider
+                      name="code"
+                      rules="required|length:4"
+                      v-slot="{ errors }"
+                    >
+                      <div class="layui-input-inline">
+                        <input
+                          type="text"
+                          name="code"
+                          placeholder="请输入图片验证码"
+                          autocomplete="off"
+                          v-model.trim="code"
+                          class="layui-input"
+                        />
+                      </div>
+                      <div class="svg" v-html="svg" @click="_getCode()"></div>
+                      <div class="layui-row">
+                        <span style="color: #c00">{{ errors[0] }}</span>
+                      </div>
+                    </validation-provider>
+                  </div>
+                  <div class="layui-form-item">
+                    <button
+                      type="button"
+                      class="layui-btn"
+                      @click="validate().then(submit)"
+                    >
+                      提交
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </validation-observer>
           </div>
         </div>
       </div>
@@ -92,12 +114,14 @@
 </template>
 
 <script>
-import { ValidationProvider } from 'vee-validate'
+import { v4 as uuidv4 } from 'uuid'
+import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { getCode, forget } from '@/api/login'
 export default {
   name: 'forget',
   components: {
-    ValidationProvider
+    ValidationProvider,
+    ValidationObserver
   },
   data () {
     return {
@@ -107,23 +131,36 @@ export default {
     }
   },
   mounted () {
+    let sid = ''
+    if (localStorage.getItem('sid')) {
+      sid = localStorage.getItem('sid')
+    } else {
+      sid = uuidv4()
+      localStorage.setItem('sid', sid)
+    }
+    this.$store.commit('setSid', sid)
     this._getCode()
   },
   methods: {
     _getCode () {
-      getCode().then((res) => {
+      let sid = this.$store.state.sid
+      getCode(sid).then((res) => {
         if (res.code === 200) {
           this.svg = res.data
         }
       })
     },
-    submit () {
+    async submit () {
+      const isValid = await this.$refs.observer.validate()
+      if (!isValid) {
+        return
+      }
       forget({
         username: this.username,
         code: this.code
       }).then((res) => {
         if (res.code === 200) {
-          alert('邮件发送成功')
+          this.$alert('邮件发送成功')
         }
       })
     }
@@ -132,9 +169,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .svg{
-    float: left;
-    position: relative;
-    top:-4px;
-  }
 </style>

@@ -229,9 +229,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.svg {
-  float: left;
-  position: relative;
-  top: -4px;
-}
 </style>

@@ -12,7 +12,7 @@
               <div class="layui-form layui-form-pane">
                 <form method="post">
                   <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">用户名</label>
+                    <label class="layui-form-label">用户名</label>
                     <validation-provider
                       name="email"
                       rules="required|email"
@@ -167,23 +167,30 @@ export default {
         sid: this.$store.state.sid
       }).then((res) => {
         if (res.code === 200) {
+          // 存储用户的登录名
+          res.data.username = this.username
+          this.$store.commit('setUserInfo', res.data)
+          this.$store.commit('setIsLogin', true)
+          this.$store.commit('setToken', res.token)
           this.username = ''
           this.password = ''
           this.code = ''
           requestAnimationFrame(() => {
-            this.$refs.observer.reset()
+            this.$refs.observer && this.$refs.observer.reset()
           })
+          this.$router.push({ name: 'index' })
         } else if (res.code === 401) {
           this.$refs.codefield.setErrors([res.msg])
         }
-      }).catch((err) => {
-        const data = err.response.data
-        if (data.code === 500) {
-          this.$alert('用户名密码校验失败，请检查！')
-        } else {
-          this.$alert('服务器错误')
-        }
       })
+        .catch((err) => {
+          const data = err.response.data
+          if (data.code === 500) {
+            this.$alert('用户名密码校验失败，请检查！')
+          } else {
+            this.$alert('服务器错误')
+          }
+        })
     }
   }
 
@@ -191,9 +198,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.svg {
-  float: left;
-  position: relative;
-  top: -4px;
-}
+
 </style>

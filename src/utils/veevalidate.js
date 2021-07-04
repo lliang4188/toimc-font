@@ -24,15 +24,16 @@ localize('zh_CN', {
     required: '请输入{_field_}',
     min: () => '不符合最小长度要求',
     max: () => '不符合最大长度要求',
-    length: (field, args) => field + '长度要求' + args.length,
-    confirmed: (field, args) => field + '不能和' + args._value_ + '相匹配'
+    length: (field, args) => field + '长度要求' + args.length
+    // confirmed: (field, args) => field + '不能和' + args._value_ + '相匹配'
   },
   names: {
     email: '邮箱',
     password: '密码',
     name: '昵称',
     username: '账号',
-    code: '验证码'
+    code: '验证码',
+    oldpassword: '当前密码'
   },
   fields: {
     username: {
@@ -55,6 +56,11 @@ localize('zh_CN', {
       },
       max: (field, { length }) => {
         return `${field}最多输入${length}个字符`
+      },
+      confirmed: (field, { target }) => {
+        console.log('TCl: -> target', target)
+        // console.log('TCl: -> field', field)
+        return `两次输入的${field}不一致`
       }
     }
   }
