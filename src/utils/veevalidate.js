@@ -1,5 +1,6 @@
 import { extend, localize } from 'vee-validate'
-import { required, email, min, max, length, confirmed } from 'vee-validate/dist/rules'
+// eslint-disable-next-line
+import { required, email, min, max, length, confirmed, is_not } from 'vee-validate/dist/rules'
 
 import zh from 'vee-validate/dist/locale/zh_CN.json'
 
@@ -9,6 +10,7 @@ extend('min', min)
 extend('max', max)
 extend('length', length)
 extend('confirmed', confirmed)
+extend('is_not', is_not)
 
 // Custom validate
 extend('name', {
@@ -33,9 +35,14 @@ localize('zh_CN', {
     name: '昵称',
     username: '账号',
     code: '验证码',
-    oldpassword: '当前密码'
+    oldpassword: '当前密码',
+    title: '标题',
+    catalog: '分类'
   },
   fields: {
+    catalog: {
+      is_not: '请选择{_field_}'
+    },
     username: {
       email: '请输入正确的邮箱'
     },

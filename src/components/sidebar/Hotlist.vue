@@ -4,7 +4,7 @@
       <dt class="fly-panel-title">本周热议</dt>
       <template v-if="lists.length > 0">
         <dd v-for="(item, index) in lists" :key="'toplist'+ index">
-          <a href="jie/detail.html">{{ item.title }}</a>
+          <router-link :to="{ name: 'detail', params:{ tid:item._id } }">{{ item.title }}</router-link>
           <span><i class="iconfont icon-pinglun1"></i> {{ item.answer }}</span>
         </dd>
       </template>

@@ -28,6 +28,9 @@ const MyCollection = () => import(/* webpackChunkName: 'mycollection' */'./compo
 const NoFound = () => import(/* webpackChunkName: '404' */'./views/Nofound.vue')
 const Confirm = () => import(/* webpackChunkName: 'confirm' */'./views/Confirm.vue')
 const Reset = () => import(/* webpackChunkName: 'reset' */'./views/Reset.vue')
+const Add = () => import(/* webpackChunkName: 'add' */'./components/contents/Add.vue')
+const Edit = () => import(/* webpackChunkName: 'edit' */'./components/contents/Edit.vue')
+const Detail = () => import(/* webpackChunkName: 'detail' */'./components/contents/Detail.vue')
 
 const router = new Router({
   linkExactActiveClass: 'layui-this',
@@ -81,7 +84,44 @@ const router = new Router({
       component: Forget
     },
     {
-      path: '/user',
+      path: '/add',
+      name: 'add',
+      component: Add,
+      meta: { requiredAuth: true }
+    },
+    {
+      path: '/edit/:tid',
+      props: true,
+      name: 'edit',
+      component: Edit,
+      meta: { requiredAuth: true },
+      beforeEnter (to, from, next) {
+        // 正常情况 detail
+        if (['detail', 'mypost'].indexOf(from.name) !== -1 && to.params.page && to.params.page.isEnd === '0') {
+          next()
+        } else {
+          const editData = localStorage.getItem('editData')
+          if (editData && editData !== '') {
+            const editObj = JSON.parse(editData)
+            if (editObj.isEnd === '0') {
+              next()
+            } else {
+              next('/')
+            }
+          } else {
+            next('/')
+          }
+        }
+      }
+    },
+    {
+      path: '/detail/:tid',
+      name: 'detail',
+      props: true,
+      component: Detail
+    },
+    {
+      path: '/user/:uid',
       name: 'home',
       props: true,
       component: User
@@ -153,6 +193,7 @@ const router = new Router({
     },
     {
       path: '/404',
+      name: '404',
       component: NoFound
     },
     {
@@ -182,6 +223,9 @@ router.beforeEach((to, from, next) => {
         'setIsLogin',
         true
       )
+      if (!store.state.ws) {
+        store.commit('initWebSocket', {})
+      }
     } else {
       localStorage.clear()
     }

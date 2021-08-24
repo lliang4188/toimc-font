@@ -15,10 +15,10 @@
 </template>
 
 <script>
-import { indexMixin } from '@/assets/mixin'
+import ListMixin from '@/mixin/list'
 import ListItem from './ListItem.vue'
 export default {
-  mixins: [indexMixin],
+  mixins: [ListMixin],
   name: 'top',
   components: {
     ListItem

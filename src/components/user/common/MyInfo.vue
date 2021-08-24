@@ -146,6 +146,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$store.state.userInfo)
     let { username, name, location, gender, regmark } = this.$store.state.userInfo
     this.username = username || ''
     this.name = name || ''

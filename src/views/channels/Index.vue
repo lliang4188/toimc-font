@@ -1,5 +1,5 @@
 <template>
-  <div class="layui-container">
+  <div class="layui-container" >
       <div class="layui-row layui-col-space15">
         <div class="layui-col-md8">
           <imooc-top></imooc-top>

@@ -19,6 +19,7 @@ export default {
 
 <style lang="scss">
 @import "./assets/css/global.css";
+@import "./assets/css/layui-layer/layer.css";
 .svg {
   float: left;
   position: relative;
@@ -40,6 +41,9 @@ export default {
   .pd#{$i * 10} {
     padding: $i * 10 + px !important;
   }
+  .pt#{$i * 10} {
+    padding-top: $i * 10 + px !important;
+  }
   .pl#{$i * 10} {
     padding-left: $i * 10 + px !important;
   }
@@ -58,5 +62,46 @@ export default {
 }
 .pull-right{
   float: right;
+}
+.d-hide{
+  position: absolute;
+  overflow: hidden;
+  height: 0;
+}
+.d-flex{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  &.flex-start{
+    justify-content: flex-start;
+  }
+  &.flex-end{
+    justify-content: flex-end;
+  }
+  &.flex-center{
+    justify-content: center;
+  }
+}
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes bounceOut {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
 }
 </style>

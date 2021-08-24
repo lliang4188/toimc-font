@@ -1,5 +1,5 @@
 import { getList } from '@/api/content'
-export const indexMixin = {
+export default {
   data () {
     return {
       isEnd: false,

@@ -1,5 +1,5 @@
 <template>
-  <div v-show="isShow">
+  <div v-if="isShow">
     <div class="alert">
       <div class="flex">{{ msg }}</div>
       <div v-if="type === 'alert'">
@@ -42,25 +42,31 @@ export default {
       default: () => {
         console.log('点击了取消')
       }
+    },
+     instance: {
+      type: Object,
+      default: () => { }
     }
   },
   methods: {
     close () {
       this.isShow = false
+      // document.body.removeChild(this.instance.$el)
     },
     closeMask () {
       if (this.type === 'alert') {
         this.close()
       }
     },
-    cancelEvent () {
-      this.cancel()
-      this.close()
-    },
+
     successEvent () {
       this.success()
       this.close()
-    }
+    },
+     cancelEvent () {
+      this.cancel()
+      this.close()
+    },
   }
 }
 </script>

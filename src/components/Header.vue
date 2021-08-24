@@ -24,7 +24,7 @@
           <li class="layui-nav-item">
             <router-link
               class="iconfont icon-touxiang layui-hide-xs"
-              :to="{name: 'login'}"
+              :to="{ name: 'login' }"
             ></router-link>
           </li>
           <li class="layui-nav-item">
@@ -42,7 +42,7 @@
         </template>
         <template v-else>
           <li class="layui-nav-item" @mouseover="show()" @mouseout="hide()">
-            <a class="fly-nav-avatar" href="javascript:;">
+            <router-link class="fly-nav-avatar" :to="{ name: 'center' }">
               <cite class="layui-hide-xs">{{ userInfo.name }}</cite>
               <!-- <i
                 class="iconfont icon-renzheng layui-hide-xs"
@@ -54,35 +54,57 @@
                 >VIP{{ userInfo.isVip }}</i
               >
               <img :src="userInfo.pic" />
-            </a>
+            </router-link>
             <dl
               class="layui-nav-child layui-anim layui-anim-upbit"
               :class="{ 'layui-show': isHover }"
             >
               <dd>
-                <router-link :to="{name: 'info'}"
-                  ><i class="layui-icon ">&#xe620;</i>基本设置</router-link>
+                <router-link :to="{ name: 'info' }"
+                  ><i class="layui-icon">&#xe620;</i>基本设置</router-link
+                >
               </dd>
               <dd>
-                <router-link :to="{name: 'msg'}"
+                <router-link :to="{ name: 'msg' }"
                   ><i class="iconfont icon-tongzhi" style="top: 4px"></i
                   >我的消息</router-link
                 >
               </dd>
               <dd>
-                <router-link :to="{name: 'home'}"
+                <router-link
+                  :to="{ name: 'home', params: { uid: userInfo._id } }"
                   ><i
                     class="layui-icon"
                     style="margin-left: 2px; font-size: 22px"
                     >&#xe68e;</i
-                  >我的主页</router-link>
+                  >我的主页</router-link
+                >
               </dd>
               <hr style="margin: 5px 0" />
               <dd>
-                <a href="javascript:;" style="text-align: center" @click="outLogin()">退出</a>
+                <a
+                  href="javascript:;"
+                  style="text-align: center"
+                  @click="outLogin()"
+                  >退出</a
+                >
               </dd>
             </dl>
           </li>
+          <div class="fly-nav-msg" v-show="num.message && num.message !== 0">
+            {{ num.message }}
+          </div>
+          <transition name="fade">
+            <div
+              class="layui-layer-tips layui-anim layui-anim-downbit"
+              v-show="hasMsg"
+            >
+              <div class="layui-layer-content">
+                您有{{ num.message }}条未读消息
+                <i class="layui-layer-TipsG layui-layer-TipsB"></i>
+              </div>
+            </div>
+          </transition>
         </template>
       </ul>
     </div>
@@ -90,12 +112,14 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'Header',
   data () {
     return {
       isHover: false,
-      hoverCtrl: {}
+      hoverCtrl: {},
+      hasMsg: false
     }
   },
   methods: {
@@ -112,16 +136,38 @@ export default {
       }, 500)
     },
     outLogin () {
-      this.$confirm('确定要退出吗？', () => {
-        localStorage.clear()
-        this.$store.commit('setToken', '')
-        this.$store.commit('setUserInfo', {})
-        this.$store.commit('setIsLogin', false)
-        this.$router.push({ name: 'index' }, () => {})
-      }, () => {})
+      // console.log('out')
+      this.$confirm(
+        '确定退出吗？',
+        () => {
+          localStorage.clear()
+          this.$store.commit('setToken', '')
+          this.$store.commit('setUserInfo', {})
+          this.$store.commit('setIsLogin', false)
+          this.$router.push({ name: 'index' }, () => {})
+        },
+        () => {}
+      )
+    }
+  },
+  watch: {
+    num (newval, oldval) {
+      if (newval.event && newval !== oldval) {
+        // 判断消息数量
+
+        if (newval.message > 0) {
+          this.hasMsg = true
+          setTimeout(() => {
+            this.hasMsg = false
+          }, 2000)
+        }
+      }
     }
   },
   computed: {
+    ...mapState({
+      num: (state) => state.num
+    }),
     isLogin () {
       return this.$store.state.isLogin
     },
@@ -140,5 +186,12 @@ export default {
 .fly-logo {
   left: -15px;
   top: -10px;
+}
+.layui-layer-tips {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  white-space: nowrap;
+  z-index: 2000;
 }
 </style>

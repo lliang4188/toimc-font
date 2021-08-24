@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { getInfo } from '@/api/user'
 import Sign from '@/components/sidebar/Sign'
 export default {
   name: 'user-center',
@@ -111,6 +112,18 @@ export default {
   computed: {
     userInfo () {
       return this.$store.state.userInfo
+    }
+  },
+  mounted () {
+    this.getUserInfo()
+  },
+  methods: {
+    getUserInfo () {
+      getInfo({ uid: this.userInfo._id }).then((res) => {
+        if (res.code === 200) {
+          this.$store.commit('setUserInfo', res.data)
+        }
+      })
     }
   }
 }

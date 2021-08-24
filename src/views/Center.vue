@@ -2,7 +2,7 @@
   <div class="layui-container fly-marginTop fly-user-main">
     <ul class="layui-nav layui-nav-tree" lay-filter="test">
       <li class="layui-nav-item layui-nav-itemed" v-for="(item,index) in lists" :key="'center'+ index">
-        <router-link :to="{name: item.link}" :active-class="item.activeClass"><i class="layui-icon" :class="item.icon"></i>{{ item.name }}</router-link>
+        <router-link :to="{ name: item.link, params:{ uid:uid }}" :active-class="item.activeClass"><i class="layui-icon" :class="item.icon"></i>{{ item.name }}</router-link>
       </li>
     </ul>
     <router-view></router-view>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'center',
   data () {
@@ -49,6 +50,9 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapGetters(['uid'])
   }
 }
 </script>
